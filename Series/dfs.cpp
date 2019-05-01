@@ -1,86 +1,155 @@
-// C++ program to print DFS traversal from 
-// a given vertex in a  given graph 
-#include<iostream> 
-#include<list> 
-using namespace std; 
-  
-// Graph class represents a directed graph 
-// using adjacency list representation 
-class Graph 
-{ 
-    int V;    // No. of vertices 
-  
-    // Pointer to an array containing 
-    // adjacency lists 
-    list<int> *adj; 
-  
-    // A recursive function used by DFS 
-    void DFSUtil(int v, bool visited[]); 
-public: 
-    Graph(int V);   // Constructor 
-  
-    // function to add an edge to graph 
-    void addEdge(int v, int w); 
-  
-    // DFS traversal of the vertices 
-    // reachable from v 
-    void DFS(int v); 
+#include <iostream>
+#include <vector>
+#include <ctime>
+#include <malloc.h> 
+#include <stdlib.h>
+
+using namespace std;
+struct node{
+    int info;
+    struct node *next;
 }; 
-  
-Graph::Graph(int V) 
-{ 
-    this->V = V; 
-    adj = new list<int>[V]; 
+ 
+class stack{
+    struct node *top;
+    public:
+        stack();
+        void push(int);
+        int pop();
+        bool isEmpty();
+        void display();
+}; 
+ 
+stack::stack(){
+    top = NULL;
 } 
-  
-void Graph::addEdge(int v, int w) 
-{ 
-    adj[v].push_back(w); // Add w to v’s list. 
+ 
+void stack::push(int data){
+    node *p;
+    if((p=(node*)malloc(sizeof(node)))==NULL){
+        cout<<"Memory Exhausted";
+        exit(0);
+    }
+    p = new node;
+    p->info = data;
+    p->next = NULL;
+    if(top!=NULL){
+        p->next = top;
+    }
+    top = p;
 } 
-  
-void Graph::DFSUtil(int v, bool visited[]) 
-{ 
-    // Mark the current node as visited and 
-    // print it 
-    visited[v] = true; 
-    cout << v << " "; 
-  
-    // Recur for all the vertices adjacent 
-    // to this vertex 
-    list<int>::iterator i; 
-    for (i = adj[v].begin(); i != adj[v].end(); ++i) 
-        if (!visited[*i]) 
-            DFSUtil(*i, visited); 
+ 
+int stack::pop(){
+    struct node *temp;
+    int value;
+    if(top==NULL){
+        cout<<"\nThe stack is Empty"<<endl;
+    }else{
+        temp = top;
+        top = top->next;
+        value = temp->info;
+        delete temp;
+    }
+    return value;
 } 
-  
-// DFS traversal of the vertices reachable from v. 
-// It uses recursive DFSUtil() 
-void Graph::DFS(int v) 
-{ 
-    // Mark all the vertices as not visited 
-    bool *visited = new bool[V]; 
-    for (int i = 0; i < V; i++) 
-        visited[i] = false; 
-  
-    // Call the recursive helper function 
-    // to print DFS traversal 
-    DFSUtil(v, visited); 
+ 
+bool stack::isEmpty(){
+    return (top == NULL);
 } 
-  
-int main() 
-{ 
-    // Create a graph given in the above diagram 
-    Graph g(4); 
-    g.addEdge(0, 1); 
-    g.addEdge(0, 2); 
-    g.addEdge(1, 2); 
-    g.addEdge(2, 0); 
-    g.addEdge(2, 3); 
-    g.addEdge(3, 3); 
-  
-    cout << "Following is Depth First Traversal"
-            " (starting from vertex 2) \n"; 
-    g.DFS(2); 
-  
-    return 0; 
+ 
+void stack::display(){
+    struct node *p = top;
+    if(top==NULL){
+        cout<<"\nNothing to Display\n";
+    }else{
+        cout<<"\nThe contents of Stack\n";
+        while(p!=NULL){
+            cout<<p->info<<endl;
+            p = p->next;
+        }
+    }
 } 
+ 
+class Graph {
+    private:
+        int n;
+		vector<vector<int> > mat;
+		
+    public:
+        Graph(vector<vector<int> > inputMatrix  );
+        ~Graph();
+        bool isConnected(int, int);
+        void addEdge(int x, int y);
+        void DFS(int , int);
+		void print();
+}; 
+ 
+Graph::Graph(vector<vector<int> > inputMatrix ) {
+mat = inputMatrix;	
+n = mat.size();
+} 
+ 
+Graph::~Graph() {} 
+ 
+bool Graph::isConnected(int x, int y) {
+    return (mat[x-1][y-1] == 1);
+} 
+ 
+void Graph::addEdge(int x, int y) {
+    mat[x-1][y-1] = mat[y-1][x-1] = 1;
+} 
+ 
+void Graph::DFS(int x, int required){
+    stack s;
+    bool *visited = new bool[n+1];
+    int i;
+    for(i = 0; i <= n; i++)
+        visited[i] = false;
+    s.push(x);
+    visited[x] = true;
+    if(x == required) return;
+    cout << "Depth first Search starting from vertex ";
+    cout << x << " : " << endl;
+    while(!s.isEmpty()){
+        int k = s.pop();
+        if(k == required) break;
+        cout<<k<<" ";
+        for (i = n; i >= 0 ; --i)
+            if (isConnected(k, i) && !visited[i]) {
+                s.push(i);
+                visited[i] = true;
+            }
+    }
+    cout<<endl;
+    delete [] visited;
+} 
+ 
+ 
+void Graph::print(){
+   for (int i = 0; i < mat.size(); i++) { 
+        for (int j = 0; j < mat[i].size(); j++) 
+			printf(" %d ",mat[i][j] );
+		printf(" \n" );
+    }
+}
+
+ 
+int main(){
+
+std::vector<std::vector<int> > matrix( 8,std::vector<int>(8));
+
+
+matrix[1][0] = 1; 
+matrix[0][1] = 1;
+
+Graph g(matrix); 
+/*
+g.addEdge(1, 2); g.addEdge(1, 3); g.addEdge(1, 4);
+g.addEdge(2, 5); g.addEdge(2, 6); g.addEdge(4, 7);
+g.addEdge(4, 8);
+*/
+g.print();
+//g.DFS(1, 4);
+
+    return 0;
+}

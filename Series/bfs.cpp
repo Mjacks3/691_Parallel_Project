@@ -1,95 +1,179 @@
- // Program to print BFS traversal from a given 
-// source vertex. BFS(int s) traverses vertices  
-// reachable from s. 
-#include<iostream> 
-#include <list> 
+#include <vector>
+#include <iostream>
+#include <ctime>
+#include <malloc.h> 
+#include <stdlib.h>
+using namespace std;
+
+struct node {
+  int info;
+  node *next;
+};
+
+class Queue {
+  private:
+  node *front;
+  node *rear;
+  public:
+  Queue();
+  ~Queue();
+  bool isEmpty();
+  void enqueue(int);
+  int dequeue();
+  void display();
+};
+
+
+void Queue::display(){
+  node *p = new node;
+  p = front;
+  if(front == NULL){
+  cout<<"\nNothing to Display\n";
+  }else{
+  while(p!=NULL){
+  cout<<endl<<p->info;
+  p = p->next;
+  }
+  }
+}
+
+
+Queue::Queue() {
+  front = NULL;
+  rear = NULL;
+}
+
+
+Queue::~Queue() {
+  delete front;
+}
+
+void Queue::enqueue(int data) {
+  node *temp = new node();
+  temp->info = data;
+  temp->next = NULL;
+  if(front == NULL){
+  front = temp;
+  }else{
+  rear->next = temp;
+  }
+  rear = temp;
+}
+
+int Queue::dequeue() {
+  node *temp = new node();
+  int value;
+  if(front == NULL){
+  cout<<"\nQueue is Emtpty\n";
+  }else{
+  temp = front;
+  value = temp->info;
+  front = front->next;
+  delete temp;
+  }
+  return value;
+}
+
+bool Queue::isEmpty() {
+  return (front == NULL);
+}
+/************************************************************
+ 
+Class Graph represents a Graph [V,E] having vertices V and
+edges E.
+ 
+************************************************************/
+class Graph {
+  private:
+  int n; 
+  vector<vector<int> > mat;
   
-using namespace std; 
+  public:
+  Graph(vector<vector<int> > inputMatrix);
+  ~Graph();
+  bool isConnected(int u, int v);
+  void addEdge(int u, int v);
+  void BFS(int s, int g );
+  void print();
+};
+
+Graph::Graph(vector<vector<int> > inputMatrix ) {
+mat = inputMatrix;	
+n = mat.size();
+}
+ 
+Graph::~Graph() {} 
+
+
+bool Graph::isConnected(int u, int v) {
+  return (mat[u-1][v-1] == 1);
+}
+
+
+void Graph::addEdge(int u, int v) {
+  mat[u-1][v-1] = mat[v-1][u-1] = 1;
+}
+
+
+void Graph::BFS(int s, int g) {
+  Queue Q;
+  /** Keeps track of explored vertices */
   
-// This class represents a directed graph using 
-// adjacency list representation 
-class Graph 
-{ 
-    int V;    // No. of vertices 
+  bool *explored = new bool[n+1];
+  for (int i = 1; i <= n; ++i)
+  explored[i] = false;
+
+  Q.enqueue(s);
+  explored[s] = true; 
+  cout << "Breadth first Search starting from vertex ";
+  cout << s << " : " << endl;
+
+
+  while (!Q.isEmpty()) {
+
   
-    // Pointer to an array containing adjacency 
-    // lists 
-    list<int> *adj;    
-public: 
-    Graph(int V);  // Constructor 
+  int v = Q.dequeue();
+
+  cout << v << " ";
+  if(v == g) break;
   
-    // function to add an edge to graph 
-    void addEdge(int v, int w);  
+  for (int w = 1; w <= n; ++w)
+  if (isConnected(v, w) && !explored[w]) {
+  Q.enqueue(w);
+  explored[w] = true;
   
-    // prints BFS traversal from a given source s 
-    void BFS(int s);   
-}; 
+  if(v == g) break;
   
-Graph::Graph(int V) 
-{ 
-    this->V = V; 
-    adj = new list<int>[V]; 
-} 
-  
-void Graph::addEdge(int v, int w) 
-{ 
-    adj[v].push_back(w); // Add w to v’s list. 
-} 
-  
-void Graph::BFS(int s) 
-{ 
-    // Mark all the vertices as not visited 
-    bool *visited = new bool[V]; 
-    for(int i = 0; i < V; i++) 
-        visited[i] = false; 
-  
-    // Create a queue for BFS 
-    list<int> queue; 
-  
-    // Mark the current node as visited and enqueue it 
-    visited[s] = true; 
-    queue.push_back(s); 
-  
-    // 'i' will be used to get all adjacent 
-    // vertices of a vertex 
-    list<int>::iterator i; 
-  
-    while(!queue.empty()) 
-    { 
-        // Dequeue a vertex from queue and print it 
-        s = queue.front(); 
-        cout << s << " "; 
-        queue.pop_front(); 
-  
-        // Get all adjacent vertices of the dequeued 
-        // vertex s. If a adjacent has not been visited,  
-        // then mark it visited and enqueue it 
-        for (i = adj[s].begin(); i != adj[s].end(); ++i) 
-        { 
-            if (!visited[*i]) 
-            { 
-                visited[*i] = true; 
-                queue.push_back(*i); 
-            } 
-        } 
-    } 
-} 
-  
-// Driver program to test methods of graph class 
-int main() 
-{ 
-    // Create a graph given in the above diagram 
-    Graph g(4); 
-    g.addEdge(0, 1); 
-    g.addEdge(0, 2); 
-    g.addEdge(1, 2); 
-    g.addEdge(2, 0); 
-    g.addEdge(2, 3); 
-    g.addEdge(3, 3); 
-  
-    cout << "Following is Breadth First Traversal "
-         << "(starting from vertex 2) \n"; 
-    g.BFS(2); 
-  
-    return 0; 
-} 
+  }
+  }
+  cout << endl;
+  delete [] explored;
+}
+
+void Graph::print(){
+   for (int i = 0; i < mat.size(); i++) { 
+        for (int j = 0; j < mat[i].size(); j++) 
+			printf(" %d ",mat[i][j] );
+		printf(" \n" );
+    }
+}
+
+int main() {
+	
+std::vector<std::vector<int> > matrix( 12,std::vector<int>(12));
+matrix[1][0] = 1; 
+matrix[0][1] = 1;
+
+Graph g(matrix); 
+
+  /** Adds edges to the graph */
+  g.addEdge(1, 2); g.addEdge(1, 3);
+  g.addEdge(2, 4); g.addEdge(3, 4);
+  g.addEdge(3, 6); g.addEdge(4 ,7);
+  g.addEdge(5, 6); g.addEdge(5, 7);
+
+   // /*  */
+  g.print();
+  g.BFS(1, 4);
+
+}
