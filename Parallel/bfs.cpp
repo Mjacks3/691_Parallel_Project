@@ -53,8 +53,7 @@ void Graph::BFS(int s, int g) {
 	/** Keeps track of explored vertices */
 	vector<bool> explored(n+1);
 
-	for (int i = 1; i <= n; ++i)
-	explored[i] = false;
+	for (int i = 1; i <= n; ++i)explored[i] = false;
 
 	Q.push(s);
 
@@ -65,25 +64,29 @@ void Graph::BFS(int s, int g) {
 
 	while (!Q.empty() and !goal_found) 
 	{	
-		int v = -1;
-		if(Q.size() != 0 ){v = Q.front(); Q.pop();}
-	  
-		if (v != -1 )
-		{ 
-			cout << v << " ";
+		#pragma omp parallel 
+		{
+			int v = -1;
+			#pragma omp critical
+			if(Q.size() != 0 ){v = Q.front(); Q.pop();}
 		  
-			if(v == g) goal_found = true;
-		
-			else
-			{
-				for (int w = 1; w <= n; ++w)
+			if (v != -1 )
+			{ 
+				cout << v << " ";
+			  
+				if(v == g) goal_found = true;
+			
+				else
 				{
-					if (isConnected(v, w) && !explored[w]) 
+					for (int w = 1; w <= n; ++w)
 					{
-						Q.push(w);	  
-						explored[w] = true;
-						
-						if(v == g) goal_found = true;
+						if (isConnected(v, w) && !explored[w]) 
+						{
+							Q.push(w);	  
+							explored[w] = true;
+							
+							if(v == g) goal_found = true;
+						}
 					}
 				}
 			}

@@ -54,8 +54,10 @@ void Graph::DFS(int x, int required){
 	
   while (!s.empty() and !goal_found) 
 	{
-
+		#pragma omp parallel 
+		{
 			int k = -1;
+			#pragma omp critical
 			if(s.size() != 0 ){k = s.top(); s.pop();}
 
 		
@@ -77,7 +79,7 @@ void Graph::DFS(int x, int required){
 					}
 				}
 			}
-		
+		}
 	}
     cout<<endl;
 } 
