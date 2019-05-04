@@ -60,7 +60,7 @@ def main():
       count = 0;
       for col in row:
         file.write(str(col));
-        file.write(",");
+        file.write(" ");
         count+=1;
         if count == size*size:
           file.write("\n");
