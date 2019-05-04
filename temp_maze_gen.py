@@ -56,6 +56,8 @@ def main():
 
   print("writing to file")
   with open(output, "w+") as file:
+    # writes the node id that is the goal for this state
+    file.write(str(random.randint(0,size*size))+"\n");
     for row in adjMatrix:
       count = 0;
       for col in row:

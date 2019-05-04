@@ -7,15 +7,17 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <tuple>
 using namespace std;
 
-vector<vector<int>> matrixRead(string filename)
+tuple <int,vector<vector<int>>> matrixRead(string filename)
 {
 
   // opens the file
   ifstream inFile;
   inFile.open(filename);
 
+  int goal;
   // creates a string to hold the line
   // a temp to store the integers of the split line
   // a count to determine vector access
@@ -34,13 +36,20 @@ vector<vector<int>> matrixRead(string filename)
     // splits the line by whitespace
     while(stream >> temp)
     {
+      if(count == 0)
+      {
+        goal = stoi(temp);
+      }
+      else
+      {
       // adds current value into 2D vector
-      adjMatrix[count].push_back(stoi(temp));
+      adjMatrix[count-1].push_back(stoi(temp));
+      }
     }
     count++;
   }
   inFile.close();
-  return adjMatrix;
+  return make_tuple(goal,adjMatrix);
 
 }
 
@@ -53,7 +62,8 @@ int main(int argc, char* argv[])
   }
 
   char* filename = argv[1];
-  vector<vector<int>> adjMatrix = matrixRead(filename);
+  tuple<int, vector<vector<int>>> mytuple = matrixRead(filename);
+  vector<vector<int>> adjMatrix = get<1>(mytuple);
   for(int i = 0; i < adjMatrix.size(); i++)
   {
     for(int j=0; j<adjMatrix[i].size(); j++)
@@ -62,4 +72,5 @@ int main(int argc, char* argv[])
     }
     printf("\n");
   }
+  printf("Goal nodeID: %d\n", get<0>(mytuple));
 }
