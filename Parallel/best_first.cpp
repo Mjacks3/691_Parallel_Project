@@ -2,7 +2,7 @@
 #include<bits/stdc++.h> 
 #include <omp.h>
 
-using namespace std; 
+ 
 #include <vector>
 #include <iostream>
 #include <ctime>
@@ -17,7 +17,7 @@ using namespace std;
 #include <vector>
 #include <tuple>
  
-
+using namespace std;
   
 // Creating a shortcut for int, int pair type 
 typedef pair<float, int> Pair; 
@@ -26,7 +26,7 @@ typedef pair<float, int> Pair;
 struct vertex_cell 
 { 
     int parent;     // Vertex of its parent
-    double f, g, h;     // f = g + h 
+    double f, h;     // f = g + h 
 }; 
   
 // A Utility Function to calculate the 'h' heuristics. 
@@ -70,7 +70,7 @@ void tracePath( vector<vertex_cell> vertexDetails, int dest)
   
 void aStarSearch(vector<vector<int> > inputMatrix , int src, int dest) 
 { 
-	vector<bool> closedList(inputMatrix.size());
+	//vector<bool> closedList(inputMatrix.size());
 	//memset(closedList, false, sizeof (closedList)); 
 	
 	//vector<vertex_cell>vertex_cell vertexDetails[inputMatrix.size()];
@@ -83,7 +83,6 @@ void aStarSearch(vector<vector<int> > inputMatrix , int src, int dest)
     for (int i=0; i<inputMatrix.size(); i++) 
     { 
 		vertexDetails[i].f = FLT_MAX; 
-		vertexDetails[i].g = FLT_MAX; 
 		vertexDetails[i].h = FLT_MAX; 
 		vertexDetails[i].parent = -1; 
 		closedList[i] = false;
@@ -94,7 +93,6 @@ void aStarSearch(vector<vector<int> > inputMatrix , int src, int dest)
     // Initialising the parameters of the starting node 
     //node = src; 
     vertexDetails[src].f = 0.0; 
-    vertexDetails[src].g = 0.0; 
     vertexDetails[src].h = 0.0; 
     vertexDetails[src].parent = src; 
   
@@ -138,7 +136,7 @@ void aStarSearch(vector<vector<int> > inputMatrix , int src, int dest)
         //Generating all the  successors of this cell 
 		
         // To store the 'g', 'h' and 'f' of the 8 successors 
-        double gNew, hNew, fNew; 
+        double hNew, fNew; 
 
 		if (node != -1 ){
 		cout << node << endl;
@@ -147,8 +145,7 @@ void aStarSearch(vector<vector<int> > inputMatrix , int src, int dest)
 		{
 
 			
-			if(closedList[adjnode] == false &&
-			   adjnode==dest && inputMatrix[node][adjnode] == 1  ){
+			if(adjnode==dest && inputMatrix[node][adjnode] == 1  ){
 				  
 				// Set the Parent of the destination cell 
 				
@@ -164,12 +161,10 @@ void aStarSearch(vector<vector<int> > inputMatrix , int src, int dest)
             // list or if it is blocked, then ignore it. 
             // Else do the following
 			
-            else if (closedList[adjnode] == false && 
-                     inputMatrix[node][adjnode] == 1 ) 
+            else if (inputMatrix[node][adjnode] == 1 ) 
             { 
-                gNew = vertexDetails[adjnode].g + 1.0; 
                 hNew = calculateHValue (node, inputMatrix.size(), dest); 
-                fNew = gNew + hNew; 
+                fNew = hNew; 
   
                 // If it isn’t on the open list, add it to 
                 // the open list. Make the current square 
@@ -186,8 +181,7 @@ void aStarSearch(vector<vector<int> > inputMatrix , int src, int dest)
                     openListPQ.push( make_pair(fNew,adjnode)); 
   
                     // Update the details of this cell 
-                    vertexDetails[adjnode].f = fNew; 
-                    vertexDetails[adjnode].g = gNew; 
+                    vertexDetails[adjnode].f = fNew;  
                     vertexDetails[adjnode].h = hNew; 
                     vertexDetails[adjnode].parent = node; 
                 }

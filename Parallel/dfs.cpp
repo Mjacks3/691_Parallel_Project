@@ -5,6 +5,21 @@
 #include <stdlib.h>
 #include <stack>
 
+
+#include <vector>
+#include <iostream>
+#include <ctime>
+#include <malloc.h> 
+#include <stdlib.h>
+#include <queue>
+#include <omp.h>
+#include <fstream>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <tuple>
+
 using namespace std;
 
 class Graph {
@@ -23,26 +38,26 @@ class Graph {
  
 Graph::Graph(vector<vector<int> > inputMatrix ) {
 mat = inputMatrix;	
-n = mat.size();
+n = mat.size() - 1;
 } 
  
 Graph::~Graph() {} 
  
 bool Graph::isConnected(int x, int y) {
-    return (mat[x-1][y-1] == 1);
+    return (mat[x][y] == 1);
 } 
  
 void Graph::addEdge(int x, int y) {
-    mat[x-1][y-1] = mat[y-1][x-1] = 1;
+    mat[x][y] = mat[y][x] = 1;
 } 
  
 void Graph::DFS(int x, int required){
     bool goal_found = false;
     std::stack<int> s;
    
-   vector<bool> visited(n+1);
+   vector<bool> visited(n);
    
-    for(int i = 0; i <= n; i++)visited[i] = false;
+    for(int i = 0; i < n; i++)visited[i] = false;
     
 	s.push(x);
 	
@@ -63,7 +78,7 @@ void Graph::DFS(int x, int required){
 		
 			if (k != -1 )
 			{ 
-				cout<<k<<" ";
+				cout<<k<<" "<<endl;
 				if(k == required ) goal_found = true;
 				else
 				{
@@ -93,7 +108,88 @@ void Graph::print(){
     }
 }
 
- 
+
+
+
+tuple <int,vector<vector<int>>> matrixRead(string filename)
+{
+
+  // opens the file
+  ifstream inFile;
+  inFile.open(filename);
+
+  int goal;
+  // creates a string to hold the line
+  // a temp to store the integers of the split line
+  // a count to determine vector access
+  // a base vector we will be creating the matrix with
+  string line;
+  string temp;
+  int count = 0;
+  vector< vector<int> > adjMatrix;
+
+  // while the file can read lines, assign the line to "line"
+  while (getline(inFile, line))
+  {
+	stringstream stream(line);
+	if(count != 0)
+	{
+		// for each line pushes an empty vector to hold the columns for that row
+		adjMatrix.push_back(vector<int>{});		
+	}
+    
+    // splits the line by whitespace
+    while(stream >> temp)
+    {
+      if(count == 0)
+      {
+        goal = stoi(temp);
+      }
+      else
+      {
+      // adds current value into 2D vector
+      adjMatrix[count-1].push_back(stoi(temp));
+      }
+    }
+    count++;
+  }
+  inFile.close();
+  return make_tuple(goal,adjMatrix);
+
+}
+
+
+int main(int argc, char *argv[])  {
+/*
+ if (argc != 2)
+  {
+    printf("Error improper arguments\nUsage: ./matrixreader {filename}");
+    exit(1);
+  }  */
+
+  char* filename = argv[1];
+  tuple<int, vector<vector<int>>> mytuple = matrixRead(filename);
+  vector<vector<int>> adjMatrix = get<1>(mytuple);
+  for(int i = 0; i < adjMatrix.size(); i++)
+  {
+    for(int j=0; j<adjMatrix[i].size(); j++)
+    {
+      printf("%d ", adjMatrix[i][j]);
+    }
+    printf("\n");
+  }
+  printf("Goal nodeID: %d\n", get<0>(mytuple));
+
+
+Graph g( get<1>(mytuple));
+
+g.DFS(24, get<0>(mytuple));
+
+//get<0>(mytuple)
+
+}
+
+/*
 int main(){
 
 std::vector<std::vector<int> > matrix( 8,std::vector<int>(8));
@@ -112,3 +208,4 @@ g.DFS(1, 4);
 
     return 0;
 }
+*/
