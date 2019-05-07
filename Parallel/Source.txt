@@ -1,4 +1,0 @@
-https://github.com/jinnaiyuu/Parallel-Best-First-Searches 
-
-https://www.boost.org/doc/libs/1_70_0/libs/graph_parallel/doc/html/tsin_depth_first_visit.html
-https://www.boost.org/doc/libs/1_68_0/libs/graph_parallel/doc/html/breadth_first_search.html
